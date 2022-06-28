@@ -1,0 +1,20 @@
+- name: Get telegraf service status facts
+  service_facts:
+
+- name: Download and install telegraf debian package
+  block:
+
+    - name: Download telegraf debian package
+      get_url:
+        url: "{{ telegraf_binary_url }}"
+        dest: "/tmp/"
+        checksum: "sha1:{{ telegraf_binary_checksum }}"
+      notify: Restart telegraf
+
+    - name: Install telegraf debian package
+      apt:
+        deb: "/tmp/telegraf_1.22.3-1_amd64.deb"
+      notify: Restart telegraf
+
+  when:
+    - ansible_facts.services["telegraf.service"] is not defined
